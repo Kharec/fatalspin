@@ -2,18 +2,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
+#include <unistd.h>
 
-void list_running_processes(void) {
+int *get_running_processes(int *count) {
   DIR *proc_dir = opendir("/proc");
   if (!proc_dir) {
     perror("Failed to open /proc");
-    return;
+    return NULL;
   }
 
   struct dirent *entry;
   struct stat statbuf;
   char path[512];
   char *endptr;
+  int *processes = malloc(sizeof(int) * 1024);
+  *count = 0;
 
   while ((entry = readdir(proc_dir))) {
     if (entry->d_name[0] == '.') {
@@ -27,14 +30,12 @@ void list_running_processes(void) {
 
     snprintf(path, sizeof(path), "/proc/%s", entry->d_name);
     if (stat(path, &statbuf) == 0 && S_ISDIR(statbuf.st_mode)) {
-      printf("%s\n", entry->d_name);
+      processes[(*count)++] = atoi(entry->d_name);
     }
   }
 
   closedir(proc_dir);
+  return processes;
 }
 
-int main(void) {
-  list_running_processes();
-  return 0;
-}
+int main(void) { return 0; }
