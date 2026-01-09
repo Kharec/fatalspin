@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
+#include <time.h>
 #include <unistd.h>
 
 int *get_running_processes(int *count) {
@@ -38,4 +39,19 @@ int *get_running_processes(int *count) {
   return processes;
 }
 
-int main(void) { return 0; }
+int pick_random_process(int *processes, int count) {
+  return processes[rand() % count];
+}
+
+int main(void) {
+  srand(time(NULL) ^ getpid());
+  int count;
+  int *processes = get_running_processes(&count);
+  if (!processes || count == 0) {
+    return 1;
+  }
+  int process = pick_random_process(processes, count);
+  printf("Process %d is nominated for termination.\n", process);
+  free(processes);
+  return 0;
+}
