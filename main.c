@@ -62,7 +62,7 @@ int main(void) {
   int process = pick_random_process(processes, count);
   free(processes);
   if (kill_process(process) != 0) {
-    perror("Abort killing order.");
+    perror("Killing order aborted. I repeat, killing order aborted.");
     return 1;
   }
 
