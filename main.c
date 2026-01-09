@@ -1,4 +1,5 @@
 #include <dirent.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
@@ -43,15 +44,27 @@ int pick_random_process(int *processes, int count) {
   return processes[rand() % count];
 }
 
+int kill_process(int process) { return kill(process, SIGKILL); }
+
 int main(void) {
+  if (getuid() != 0) {
+    printf(
+        "You're not bold enought to run this program as root, interesting.\n");
+  }
+
   srand(time(NULL) ^ getpid());
   int count;
   int *processes = get_running_processes(&count);
   if (!processes || count == 0) {
     return 1;
   }
+
   int process = pick_random_process(processes, count);
-  printf("Process %d is nominated for termination.\n", process);
   free(processes);
-  return 0;
+  if (kill_process(process) != 0) {
+    perror("Abort killing order.");
+    return 1;
+  }
+
+  return process; // now you get it
 }
