@@ -6,9 +6,11 @@ A little tool that kills a random process in your unix system, written in C.
 
 I just did it for fun.
 
-Really, no other reason. 
+Really, no other reason.
 
-Be bold : build and run it without reading the code using root privileges.
+## Be BOLD
+
+Build and run it without reading the code using root privileges.
 
 ## How to build
 
