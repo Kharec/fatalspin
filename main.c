@@ -30,7 +30,7 @@ int *get_running_processes(int *count) {
       continue;
     }
 
-    strtol(entry->d_name, &endptr, 10);
+    long pid = strtol(entry->d_name, &endptr, 10);
     if (*endptr != '\0') {
       continue;
     }
@@ -47,7 +47,7 @@ int *get_running_processes(int *count) {
         }
         processes = grown;
       }
-      processes[(*count)++] = atoi(entry->d_name);
+      processes[(*count)++] = (int)pid;
     }
   }
 
