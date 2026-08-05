@@ -17,7 +17,12 @@ int *get_running_processes(int *count) {
   struct stat statbuf;
   char path[512];
   char *endptr;
-  int *processes = malloc(sizeof(int) * 1024);
+  int capacity = 1024;
+  int *processes = malloc(sizeof(int) * capacity);
+  if (!processes) {
+    closedir(proc_dir);
+    return NULL;
+  }
   *count = 0;
 
   while ((entry = readdir(proc_dir))) {
@@ -32,6 +37,16 @@ int *get_running_processes(int *count) {
 
     snprintf(path, sizeof(path), "/proc/%s", entry->d_name);
     if (stat(path, &statbuf) == 0 && S_ISDIR(statbuf.st_mode)) {
+      if (*count >= capacity) {
+        capacity *= 2;
+        int *grown = realloc(processes, sizeof(int) * capacity);
+        if (!grown) {
+          free(processes);
+          closedir(proc_dir);
+          return NULL;
+        }
+        processes = grown;
+      }
       processes[(*count)++] = atoi(entry->d_name);
     }
   }
